@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Story - Menegram</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  body, html { margin:0; padding:0; font-family: Arial, sans-serif; background:#000; height:100%; overflow:hidden; }
+  .story-container { position:relative; width:100%; height:100%; background:#000; display:flex; justify-content:center; align-items:center; }
+  .story-media { max-width:100%; max-height:100%; object-fit:contain; }
+
+  .progress-wrapper { position:absolute; top:10px; left:10px; right:10px; display:flex; gap:3px; z-index:100; }
+  .progress { flex:1; height:3px; background:rgba(255,255,255,0.3); }
+  .progress-inner { width:0%; height:100%; background:#fff; transition: width 0.1s; }
+
+  .story-top { position:absolute; top:0; left:0; width:100%; padding:10px; display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.3); z-index:100; }
+  .story-top img { width:40px; height:40px; border-radius:50%; }
+  .story-top .username { color:#fff; font-weight:bold; }
+  .story-top button { margin-left:auto; background:none; border:none; color:#fff; font-size:1.2em; cursor:pointer; }
+
+  .story-left, .story-right { position:absolute; top:0; width:50%; height:100%; cursor:pointer; z-index:50; }
+  .story-left { left:0; }
+  .story-right { right:0; }
+
+  .story-bottom { position:absolute; bottom:10px; left:0; width:100%; display:flex; justify-content:center; gap:10px; padding:0 10px; z-index:100; }
+  .story-bottom input { flex:1; padding:8px 12px; border-radius:20px; border:none; outline:none; font-size:0.9em; }
+  .story-bottom button { background:#8e44ad; color:#fff; border:none; padding:0 15px; border-radius:50%; cursor:pointer; transition: transform 0.2s; }
+  .story-bottom button:active { transform: scale(1.2); }
+
+  .upload-container { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); display:flex; flex-direction:column; gap:10px; z-index:200; color:#fff; text-align:center; }
+  .upload-container input { display:none; }
+  .upload-container label { background:#8e44ad; padding:10px 20px; border-radius:20px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="story-container">
+  <!-- شريط التقدم -->
+  <div class="progress-wrapper" id="progressWrapper"></div>
+
+  <!-- شريط علوي -->
+  <div class="story-top">
+    <img id="storyProfile" src="https://via.placeholder.com/40" alt="profile">
+    <span class="username" id="storyUsername">أحمد</span>
+    <button onclick="closeStory()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <!-- مناطق الضغط للانتقال -->
+  <div class="story-left" onclick="prevStory()"></div>
+  <div class="story-right" onclick="nextStory()"></div>
+
+  <!-- محتوى الستوري -->
+  <div id="storyContentContainer">
+    <img id="storyContent" class="story-media">
+    <video id="storyVideo" class="story-media" style="display:none;" playsinline muted></video>
+  </div>
+
+  <!-- شريط الرد -->
+  <div class="story-bottom">
+    <input type="text" id="storyInput" placeholder="اكتب رد...">
+    <button onclick="sendStoryReply()"><i class="fa-solid fa-paper-plane"></i></button>
+    <button onclick="reactStory()"><i class="fa-solid fa-heart"></i></button>
+  </div>
+
+  <!-- رفع ستوري جديد -->
+  <div class="upload-container">
+    <label for="storyUpload">رفع صورة أو فيديو جديد</label>
+    <input type="file" id="storyUpload" accept="image/*,video/*">
+  </div>
+</div>
+
+<script>
+let usersStories = [
+  { username:'أحمد', profile:'https://via.placeholder.com/40', stories:[
+    { type:'image', src:'https://via.placeholder.com/400x700' },
+    { type:'video', src:'sample.mp4' }
+  ]},
+  { username:'مريم', profile:'https://via.placeholder.com/40/ff0000', stories:[
+    { type:'image', src:'https://via.placeholder.com/400x700/ff0000' },
+    { type:'image', src:'https://via.placeholder.com/400x700/00ff00' }
+  ]}
+];
+
+let currentUser = 0;
+let currentStory = 0;
+let progressInterval = null;
+let progressWrappers = [];
+const defaultDuration = 5000;
+
+function setupProgressBars(){
+  const wrapper = document.getElementById('progressWrapper');
+  wrapper.innerHTML = '';
+  progressWrappers = [];
+  let stories = usersStories[currentUser].stories;
+  stories.forEach(()=> {
+    const bar = document.createElement('div');
+    bar.classList.add('progress');
+    const inner = document.createElement('div');
+    inner.classList.add('progress-inner');
+    bar.appendChild(inner);
+    wrapper.appendChild(bar);
+    progressWrappers.push(inner);
+  });
+}
+
+function startProgress(time){
+  clearInterval(progressInterval);
+  let progress = 0;
+  progressWrappers.forEach((p,i)=>{
+    p.style.width = i<currentStory ? '100%' : '0%';
+  });
+  progressInterval = setInterval(()=>{
+    progress += 100/(time/100);
+    if(progress >= 100){ nextStory(); }
+    else{ progressWrappers[currentStory].style.width = progress+'%'; }
+  },100);
+}
+
+function showStory(userIndex, storyIndex){
+  if(userIndex>=usersStories.length){ closeStory(); return; }
+  currentUser = userIndex;
+  let stories = usersStories[currentUser].stories;
+  if(storyIndex>=stories.length){ showStory(currentUser+1,0); return; }
+  if(storyIndex<0){ if(currentUser>0) showStory(currentUser-1, usersStories[currentUser-1].stories.length-1); return; }
+  currentStory = storyIndex;
+
+  document.getElementById('storyUsername').textContent = usersStories[currentUser].username;
+  document.getElementById('storyProfile').src = usersStories[currentUser].profile;
+
+  setupProgressBars();
+  const s = stories[currentStory];
+  const img = document.getElementById('storyContent');
+  const video = document.getElementById('storyVideo');
+
+  if(s.type==='image'){
+    video.style.display='none';
+    video.pause();
+    img.style.display='block';
+    img.src = s.src;
+    startProgress(defaultDuration);
+  } else if(s.type==='video'){
+    img.style.display='none';
+    video.style.display='block';
+    video.src = s.src;
+    video.currentTime = 0;
+    video.play();
+    video.onloadedmetadata = () => startProgress(video.duration*1000);
+    video.onended = () => nextStory();
+  }
+}
+
+function nextStory(){ showStory(currentUser, currentStory+1); }
+function prevStory(){ showStory(currentUser, currentStory-1); }
+function closeStory(){ window.history.back(); }
+
+function sendStoryReply(){
+  const msg = document.getElementById('storyInput').value.trim();
+  if(msg) alert('تم إرسال الرد: '+msg);
+}
+
+function reactStory(){ alert('تم عمل React ❤️ على الستوري'); }
+
+document.getElementById('storyUpload').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const type = file.type.startsWith('video') ? 'video' : 'image';
+  const url = URL.createObjectURL(file);
+  usersStories[currentUser].stories.push({type,type, src:url});
+  showStory(currentUser, usersStories[currentUser].stories.length-1);
+});
+
+window.onload = () => { showStory(0,0); };
+</script>
+
+</body>
+</html>

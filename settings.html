@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الإعدادات - Menegram</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body { margin:0; font-family: Arial, sans-serif; background:#fff; }
+.navbar { display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-bottom:1px solid #ddd; position:fixed; top:0; width:100%; background:#fff; z-index:1000; }
+.navbar h1 { font-size:1.5em; font-weight:bold; }
+.settings-container { margin-top:60px; padding:15px; }
+.setting-item { display:flex; justify-content:space-between; align-items:center; padding:15px; border-bottom:1px solid #eee; cursor:pointer; transition: background 0.2s; }
+.setting-item:hover { background:#f0f0f0; }
+.setting-item span { font-size:1.1em; }
+.bottom-nav { position:fixed; bottom:0; width:100%; background:#fff; border-top:1px solid #ddd; display:flex; justify-content:space-around; padding:5px 0; }
+.bottom-nav i { font-size:1.5em; cursor:pointer; transition: transform 0.2s; }
+.bottom-nav i:active { transform: scale(1.2); }
+</style>
+</head>
+<body>
+
+<!-- شريط علوي -->
+<div class="navbar">
+  <button onclick="history.back()"><i class="fa-solid fa-arrow-left"></i></button>
+  <h1>الإعدادات</h1>
+  <div></div>
+</div>
+
+<!-- قائمة الإعدادات -->
+<div class="settings-container">
+  <div class="setting-item" onclick="alert('تغيير اسم المستخدم')">
+    <span>تغيير اسم المستخدم</span>
+    <i class="fa-solid fa-user-pen"></i>
+  </div>
+  <div class="setting-item" onclick="alert('تغيير كلمة المرور')">
+    <span>تغيير كلمة المرور</span>
+    <i class="fa-solid fa-lock"></i>
+  </div>
+  <div class="setting-item" onclick="alert('إدارة الإشعارات')">
+    <span>الإشعارات</span>
+    <i class="fa-solid fa-bell"></i>
+  </div>
+  <div class="setting-item" onclick="alert('تبديل الحسابات')">
+    <span>تبديل الحسابات</span>
+    <i class="fa-solid fa-repeat"></i>
+  </div>
+  <div class="setting-item" onclick="alert('الإبلاغ عن مشكلة')">
+    <span>الإبلاغ عن مشكلة</span>
+    <i class="fa-solid fa-flag"></i>
+  </div>
+  <div class="setting-item" onclick="alert('عدد الأشخاص الذين حضروا: 120')">
+    <span>عدد الأشخاص الذين حضروا</span>
+    <i class="fa-solid fa-users"></i>
+  </div>
+  <div class="setting-item" onclick="alert('تسجيل الخروج')">
+    <span>تسجيل الخروج</span>
+    <i class="fa-solid fa-right-from-bracket"></i>
+  </div>
+</div>
+
+<!-- شريط سفلي -->
+<div class="bottom-nav">
+  <i class="fa-solid fa-house"></i>
+  <i class="fa-solid fa-video"></i>
+  <i class="fa-solid fa-square-plus"></i>
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <i class="fa-regular fa-user"></i>
+</div>
+
+</body>
+</html>

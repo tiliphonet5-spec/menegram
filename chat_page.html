@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المحادثة - Menegram</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body { margin:0; font-family: Arial, sans-serif; background:#fff; }
+.navbar { display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-bottom:1px solid #ddd; position:fixed; top:0; width:100%; background:#fff; z-index:1000; }
+.navbar .user-info { display:flex; align-items:center; gap:10px; }
+.navbar img { border-radius:50%; width:40px; height:40px; }
+.navbar h2 { margin:0; font-size:1.2em; }
+.navbar .actions i { font-size:1.2em; margin-left:10px; cursor:pointer; }
+.chat-container { padding:70px 10px 70px 10px; display:flex; flex-direction:column; gap:10px; max-height:calc(100vh - 140px); overflow-y:auto; }
+.message { max-width:70%; padding:8px 12px; border-radius:15px; background:#f0f0f0; position:relative; cursor:pointer; }
+.message.sent { align-self:flex-end; background:#dcf8c6; }
+.message.received { align-self:flex-start; background:#fff; border:1px solid #ddd; }
+.message span.time { font-size:0.7em; color:#888; position:absolute; bottom:-15px; right:10px; }
+.input-container { position:fixed; bottom:0; width:100%; display:flex; align-items:center; padding:5px 10px; background:#fff; border-top:1px solid #ddd; gap:5px; }
+.input-container input[type=text] { flex:1; padding:8px 10px; border-radius:20px; border:1px solid #ddd; }
+.input-container button { background:none; color:#000; border:none; padding:8px 12px; cursor:pointer; font-size:1.2em; }
+.react-popup { display:none; position:absolute; bottom:100%; left:50%; transform:translateX(-50%); background:#fff; border:1px solid #ddd; border-radius:20px; padding:5px; display:flex; gap:5px; }
+.react-popup span { cursor:pointer; font-size:1.2em; }
+.settings-popup { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); width:90%; max-width:350px; background:#fff; border:1px solid #ddd; border-radius:15px; padding:20px; z-index:2000; box-shadow:0 4px 10px rgba(0,0,0,0.2); }
+.settings-popup h3 { margin-top:0; text-align:center; }
+.settings-popup button { width:100%; padding:10px; margin:5px 0; border:none; border-radius:10px; cursor:pointer; background:#f0f0f0; font-size:1em; transition: background 0.2s; }
+.settings-popup button:hover { background:#ddd; }
+.settings-popup .close-btn { background:#5d3ebc; color:#fff; margin-top:10px; }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="user-info">
+    <img src="https://via.placeholder.com/40" alt="User" id="chatUserImg">
+    <h2 id="chatUserName">أحمد</h2>
+  </div>
+  <div class="actions">
+    <i class="fa-solid fa-phone" title="اتصال صوتي"></i>
+    <i class="fa-solid fa-video" title="اتصال فيديو"></i>
+    <i class="fa-solid fa-ellipsis" title="إعدادات المحادثة" onclick="openSettings()"></i>
+  </div>
+</div>
+
+<div class="chat-container" id="chatContainer">
+  <div class="message received" oncontextmenu="openReact(event,this)">
+    مرحبا! كيف حالك؟
+    <span class="time">10:30 ص</span>
+  </div>
+  <div class="message sent" oncontextmenu="openReact(event,this)">
+    بخير، وأنت؟
+    <span class="time">10:31 ص</span>
+  </div>
+</div>
+
+<div class="input-container">
+  <input type="text" id="messageInput" placeholder="أكتب رسالة...">
+  <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+  <button id="audioBtn"><i class="fa-solid fa-microphone"></i></button>
+  <label for="imageInput" style="cursor:pointer; font-size:1.2em;"><i class="fa-solid fa-image"></i></label>
+  <input type="file" id="imageInput" accept="image/*" style="display:none;">
+</div>
+
+<div class="react-popup" id="reactPopup">
+  <span>❤</span>
+  <span>😂</span>
+  <span>👍</span>
+  <span>😮</span>
+  <span>😢</span>
+</div>
+
+<div class="settings-popup" id="settingsPopup">
+  <h3>إعدادات المحادثة</h3>
+  <button onclick="alert('حظر المستخدم')">حظر المستخدم</button>
+  <button onclick="alert('عرض الوسائط المشتركة')">الوسائط المشتركة</button>
+  <button onclick="alert('تغيير اسم المستخدم')">تغيير اسم المستخدم</button>
+  <button onclick="alert('الإبلاغ عن مشكلة')">الإبلاغ عن مشكلة</button>
+  <button onclick="closeSettings()" class="close-btn">إغلاق</button>
+</div>
+
+<script>
+// ضبط الاسم والصورة من chat list
+const params = new URLSearchParams(window.location.search);
+const userName = params.get('name') || 'أحمد';
+const userImg = params.get('img') || 'https://via.placeholder.com/40';
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('chatUserName').textContent = userName;
+  document.getElementById('chatUserImg').src = userImg;
+});
+
+// إرسال رسالة نصية
+const chatContainer = document.getElementById('chatContainer');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+sendBtn.onclick = sendMessage;
+function sendMessage() {
+  const text = messageInput.value.trim();
+  if(!text) return;
+  const msg = document.createElement('div');
+  msg.className = 'message sent';
+  msg.innerHTML = text + '<span class="time">' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) + '</span>';
+  msg.setAttribute('oncontextmenu','openReact(event,this)');
+  chatContainer.appendChild(msg);
+  messageInput.value = '';
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// تسجيل صوتي
+let mediaRecorder;
+let audioChunks = [];
+const audioBtn = document.getElementById('audioBtn');
+audioBtn.onmousedown = async () => {
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+    const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.start();
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+  } else alert("الميكروفون غير مدعوم");
+};
+audioBtn.onmouseup = () => {
+  if(mediaRecorder){
+    mediaRecorder.stop();
+    mediaRecorder.onstop = () => {
+      const audioBlob = new Blob(audioChunks, { type:'audio/mp3' });
+      const audioURL = URL.createObjectURL(audioBlob);
+      const msg = document.createElement('div');
+      msg.className = 'message sent';
+      msg.innerHTML = `<audio controls src="${audioURL}"></audio><span class="time">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>`;
+      chatContainer.appendChild(msg);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    };
+  }
+};
+
+// إرسال صورة
+const imageInput = document.getElementById('imageInput');
+imageInput.addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(event){
+    const msg = document.createElement('div');
+    msg.className = 'message sent';
+    msg.innerHTML = `<img src="${event.target.result}" style="max-width:70%; border-radius:10px;"><span class="time">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>`;
+    chatContainer.appendChild(msg);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  };
+  reader.readAsDataURL(file);
+  imageInput.value = '';
+});
+
+// React على الرسائل
+const reactPopup = document.getElementById('reactPopup');
+let currentMessage = null;
+function openReact(e, message) {
+  e.preventDefault();
+  currentMessage = message;
+  reactPopup.style.display = 'flex';
+  const rect = message.getBoundingClientRect();
+  reactPopup.style.top = rect.top - 40 + 'px';
+  reactPopup.style.left = rect.left + rect.width/2 + 'px';
+}
+reactPopup.querySelectorAll('span').forEach(emoji => {
+  emoji.addEventListener('click', () => {
+    if(currentMessage){
+      currentMessage.innerHTML += ' ' + emoji.textContent;
+      reactPopup.style.display = 'none';
+      currentMessage = null;
+    }
+  });
+});
+document.addEventListener('click', (e)=>{
+  if(!reactPopup.contains(e.target)) reactPopup.style.display = 'none';
+});
+
+// Settings
+const settingsPopup = document.getElementById('settingsPopup');
+function openSettings(){ settingsPopup.style.display = 'block'; }
+function closeSettings(){ settingsPopup.style.display = 'none'; }
+
+</script>
+
+</body>
+</html>

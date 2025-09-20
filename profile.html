@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الملف الشخصي - Menegram</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body { margin:0; font-family: Arial, sans-serif; background:#fff; }
+.navbar { display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-bottom:1px solid #ddd; position:fixed; top:0; width:100%; background:#fff; z-index:1000; }
+.navbar h1 { font-size:1.5em; font-weight:bold; }
+.profile-header { margin-top:60px; padding:15px; display:flex; align-items:center; gap:15px; }
+.profile-header img { width:80px; height:80px; border-radius:50%; cursor:pointer; }
+.profile-info { flex:1; }
+.profile-info h2 { margin:0; }
+.bio { font-size:0.95em; color:#555; margin:5px 0; }
+.stats { display:flex; gap:15px; margin-top:5px; }
+.stats div { text-align:center; }
+.stats div span { display:block; font-weight:bold; font-size:1.1em; }
+.btn { padding:5px 15px; border:none; border-radius:20px; background:#8e44ad; color:#fff; cursor:pointer; margin-right:5px; transition: transform 0.2s; }
+.btn:active { transform: scale(1.1); }
+.posts-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; padding:10px; }
+.posts-grid img, .posts-grid video { width:100%; height:150px; object-fit:cover; cursor:pointer; transition: transform 0.2s; border-radius:5px; }
+.posts-grid img:active, .posts-grid video:active { transform: scale(1.05); }
+.bottom-nav { position:fixed; bottom:0; width:100%; background:#fff; border-top:1px solid #ddd; display:flex; justify-content:space-around; padding:5px 0; }
+.bottom-nav i { font-size:1.5em; cursor:pointer; transition: transform 0.2s; }
+.bottom-nav i:active { transform: scale(1.2); }
+</style>
+</head>
+<body>
+
+<!-- شريط علوي -->
+<div class="navbar">
+  <h1>menegram_user</h1>
+  <button onclick="window.location.href='settings.html'"><i class="fa-solid fa-gear"></i></button>
+</div>
+
+<!-- معلومات البروفايل -->
+<div class="profile-header">
+  <img id="profilePic" src="https://via.placeholder.com/80" alt="profile" onclick="changeProfilePic()">
+  <div class="profile-info">
+    <h2 id="username">menegram_user</h2>
+    <div class="bio" id="bio">مرحباً، هذا البايو الخاص بي!</div>
+    <div class="stats">
+      <div><span id="postsCount">56</span> منشورات</div>
+      <div><span id="followersCount">120</span> متابع</div>
+      <div><span id="followingCount">75</span> يتابع</div>
+    </div>
+    <button class="btn" onclick="editProfile()">تعديل الملف الشخصي</button>
+    <button class="btn" id="messageBtn" onclick="sendMessage()">إرسال رسالة</button>
+  </div>
+</div>
+
+<!-- شبكة المنشورات -->
+<div class="posts-grid" id="postsGrid">
+  <img src="https://via.placeholder.com/150" alt="post">
+  <video controls>
+    <source src="sample.mp4" type="video/mp4">
+  </video>
+  <img src="https://via.placeholder.com/150" alt="post">
+  <img src="https://via.placeholder.com/150" alt="post">
+  <video controls>
+    <source src="sample.mp4" type="video/mp4">
+  </video>
+  <img src="https://via.placeholder.com/150" alt="post">
+</div>
+
+<!-- شريط سفلي -->
+<div class="bottom-nav">
+  <i class="fa-solid fa-house"></i>
+  <i class="fa-solid fa-video"></i>
+  <i class="fa-solid fa-square-plus"></i>
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <i class="fa-regular fa-user"></i>
+</div>
+
+<script>
+let isPrivate = false; // false = عام, true = خاص
+let isFollower = true; // لتحديد اذا المستخدم متابع ام لا
+
+function editProfile() {
+  const newBio = prompt("عدل البايو:", document.getElementById("bio").innerText);
+  if(newBio!==null) document.getElementById("bio").innerText = newBio;
+
+  const changePrivate = confirm("هل تريد جعل الحساب خاص؟ اضغط OK لخاص وCancel لعامة");
+  isPrivate = changePrivate;
+
+  updateProfileView();
+}
+
+function changeProfilePic() {
+  const newPic = prompt("ضع رابط صورة الملف الشخصي:");
+  if(newPic) document.getElementById("profilePic").src = newPic;
+}
+
+function updateProfileView() {
+  const postsGrid = document.getElementById("postsGrid");
+  const messageBtn = document.getElementById("messageBtn");
+
+  if(isPrivate && !isFollower) {
+    postsGrid.style.display = "none";
+    messageBtn.style.display = "none";
+  } else {
+    postsGrid.style.display = "grid";
+    messageBtn.style.display = "inline-block";
+  }
+}
+
+function sendMessage() {
+  alert("تم فتح نافذة المحادثة مع " + document.getElementById("username").innerText);
+}
+
+updateProfileView(); // تفعيل الحالة الافتراضية
+</script>
+
+</body>
+</html>

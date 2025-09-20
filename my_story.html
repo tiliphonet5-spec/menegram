@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قصتي - Menegram</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body { margin:0; font-family: Arial, sans-serif; background:#000; color:#fff; }
+.story-container { position:relative; width:100%; height:100vh; overflow:hidden; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+.story-media { max-width:100%; max-height:80%; object-fit:contain; border-radius:10px; }
+.progress-bar { position:absolute; top:10px; left:10px; right:10px; height:4px; background:rgba(255,255,255,0.3); display:flex; gap:3px; }
+.progress-bar div { flex:1; background:#fff; height:100%; width:0%; transition: width 0.1s linear; }
+.top-bar { position:absolute; top:20px; left:10px; right:10px; display:flex; justify-content:space-between; align-items:center; }
+.user-info { display:flex; align-items:center; gap:10px; }
+.user-info img { width:40px; height:40px; border-radius:50%; }
+.username { font-weight:bold; }
+.story-actions { display:flex; gap:15px; }
+.story-actions i { font-size:1.5em; cursor:pointer; transition: transform 0.2s; }
+.story-actions i:active { transform: scale(1.2); }
+.bottom-actions { position:absolute; bottom:20px; width:100%; display:flex; justify-content:center; gap:20px; }
+.bottom-actions button { padding:8px 15px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; transition: background 0.2s; }
+.add-music { background:#405de6; color:#fff; }
+.add-text { background:#fff; color:#000; }
+.delete-story { background:#ff4444; color:#fff; }
+</style>
+</head>
+<body>
+
+<div class="story-container">
+  <!-- Progress Bar -->
+  <div class="progress-bar" id="progressBar">
+    <div id="progress1"></div>
+    <div id="progress2"></div>
+    <div id="progress3"></div>
+  </div>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="user-info">
+      <img src="https://via.placeholder.com/40" alt="profile">
+      <span class="username">menegram_user</span>
+    </div>
+    <div class="story-actions">
+      <i class="fa-solid fa-music" onclick="alert('إضافة أغنية')"></i>
+      <i class="fa-solid fa-ellipsis" onclick="alert('خيارات القصة')"></i>
+    </div>
+  </div>
+
+  <!-- Media Story -->
+  <img src="https://via.placeholder.com/400x700" class="story-media" id="storyMedia">
+
+  <!-- Bottom Actions -->
+  <div class="bottom-actions">
+    <button class="add-music" onclick="alert('إضافة أغنية على القصة')">أغنية</button>
+    <button class="add-text" onclick="alert('إضافة نص على القصة')">نص</button>
+    <button class="delete-story" onclick="alert('تم حذف القصة')">حذف</button>
+  </div>
+</div>
+
+<script>
+// محاكاة شريط التقدم لكل Story
+let progressElements = document.querySelectorAll('.progress-bar div');
+let current = 0;
+function startProgress() {
+  let width = 0;
+  let interval = setInterval(() => {
+    if (width >= 100) {
+      progressElements[current].style.width = '100%';
+      clearInterval(interval);
+      current++;
+      if(current < progressElements.length){
+        startProgress();
+      }
+    } else {
+      width += 1;
+      progressElements[current].style.width = width + '%';
+    }
+  }, 50); // الوقت الذي تستغرقه القصة 5 ثواني لكل قسم
+}
+startProgress();
+</script>
+
+</body>
+</html>

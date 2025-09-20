@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menegram - تسجيل الدخول</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#fafafa;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.login-container {
+  background:#fff;
+  padding:40px 30px;
+  border:1px solid #ddd;
+  border-radius:15px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+  width:100%;
+  max-width:400px;
+  text-align:center;
+}
+.login-container h1 {
+  margin-bottom:20px;
+  font-size:2em;
+  color:#333;
+}
+.login-container input[type="text"],
+.login-container input[type="password"] {
+  width:100%;
+  padding:12px 15px;
+  margin:10px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:1em;
+}
+.login-container button {
+  width:100%;
+  padding:12px;
+  margin-top:15px;
+  border:none;
+  border-radius:8px;
+  background:#405de6;
+  color:#fff;
+  font-size:1em;
+  cursor:pointer;
+  transition: background 0.3s;
+}
+.login-container button:hover {
+  background:#313abe;
+}
+.login-container .social-login {
+  display:flex;
+  justify-content:space-between;
+  margin-top:20px;
+}
+.login-container .social-login button {
+  flex:1;
+  margin:0 5px;
+  background:#eee;
+  color:#333;
+  font-size:1.1em;
+}
+.login-container .social-login button:hover {
+  background:#ddd;
+}
+.login-container p {
+  margin-top:15px;
+  font-size:0.9em;
+  color:#555;
+}
+.login-container p a {
+  color:#405de6;
+  text-decoration:none;
+}
+.login-container p a:hover {
+  text-decoration:underline;
+}
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <h1>Menegram</h1>
+  <input type="text" id="username" placeholder="اسم المستخدم أو البريد">
+  <input type="password" id="password" placeholder="كلمة المرور">
+  <button id="loginBtn">تسجيل الدخول</button>
+
+  <div class="social-login">
+    <button><i class="fa-brands fa-facebook"></i> فيسبوك</button>
+    <button><i class="fa-brands fa-google"></i> جوجل</button>
+  </div>
+
+  <p>ليس لديك حساب؟ <a href="signup.html">إنشاء حساب</a></p>
+</div>
+
+<script>
+const loginBtn = document.getElementById('loginBtn');
+loginBtn.onclick = () => {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  if(username && password){
+    // هنا يمكنك إضافة التحقق من Firebase أو أي نظام تسجيل دخول
+    // حاليًا سينتقل مباشرة إلى home.html
+    window.location.href = 'home.html';
+  } else {
+    alert('الرجاء إدخال اسم المستخدم وكلمة المرور');
+  }
+};
+</script>
+
+</body>
+</html>

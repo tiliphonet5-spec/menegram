@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menegram - الرئيسية</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body { margin:0; font-family: Arial, sans-serif; background:#fff; color:#000; }
+.navbar { display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-bottom:1px solid #ddd; position:fixed; top:0; width:100%; background:#fff; z-index:1000; }
+.logo { font-size:1.5em; font-weight:bold; cursor:pointer; }
+.nav-icons button { background:none; border:none; font-size:1.5em; margin-left:10px; cursor:pointer; transition: transform 0.2s; }
+.nav-icons button:active { transform: scale(1.3); }
+
+/* Stories */
+.stories-container { display:flex; overflow-x:auto; padding:70px 10px 10px 10px; gap:15px; border-bottom:1px solid #ddd; }
+.story { text-align:center; cursor:pointer; transition: transform 0.2s; }
+.story img { border-radius:50%; width:70px; height:70px; border:2px solid #f0f0f0; transition: transform 0.2s, border 0.2s; }
+.story:hover img { transform: scale(1.1); border-color:#555; }
+.story p { margin-top:5px; font-size:0.8em; }
+
+/* Posts */
+main { padding:10px; margin-top:10px; }
+.post { border:1px solid #ddd; border-radius:10px; margin-bottom:15px; overflow:hidden; background:#fff; }
+.post-header { display:flex; align-items:center; padding:10px; gap:10px; }
+.post-header img { border-radius:50%; width:40px; height:40px; cursor:pointer; }
+.post-header .username { font-weight:bold; cursor:pointer; }
+.post-media { width:100%; max-height:450px; object-fit:cover; cursor:pointer; }
+.post-actions { display:flex; padding:5px 10px; gap:15px; }
+.post-actions button { background:none; border:none; font-size:1.5em; cursor:pointer; }
+.likes, .caption { padding:0 10px 5px 10px; }
+
+/* Bottom nav */
+.bottom-nav { position:fixed; bottom:0; width:100%; background:#fff; border-top:1px solid #ddd; display:flex; justify-content:space-around; padding:5px 0; }
+.bottom-nav i { font-size:1.5em; cursor:pointer; transition: transform 0.2s; }
+.bottom-nav i:active { transform: scale(1.3); }
+
+/* Modal */
+#postModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:2000; }
+#postModalContent { background:#fff; border-radius:10px; padding:10px; max-width:90%; max-height:90%; overflow:auto; }
+.closeModal { float:right; cursor:pointer; font-size:1.2em; }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <h1 class="logo" onclick="location.href='home.html'">Menegram</h1>
+  <div class="nav-icons">
+    <button onclick="location.href='notifications.html'"><i class="fa-regular fa-bell"></i></button>
+    <button onclick="location.href='chat_list.html'"><i class="fa-regular fa-envelope"></i></button>
+  </div>
+</nav>
+
+<div class="stories-container">
+  <div class="story" onclick="location.href='story_view.html'"><img src="https://via.placeholder.com/70" alt="story"><p>أنت</p></div>
+  <div class="story" onclick="location.href='story_view.html'"><img src="https://via.placeholder.com/70" alt="story"><p>مريم</p></div>
+  <div class="story" onclick="location.href='story_view.html'"><img src="https://via.placeholder.com/70" alt="story"><p>أحمد</p></div>
+  <div class="story" onclick="location.href='story_view.html'"><img src="https://via.placeholder.com/70" alt="story"><p>خالد</p></div>
+</div>
+
+<main id="postsContainer">
+  <div class="post">
+    <div class="post-header">
+      <img src="https://via.placeholder.com/40" class="profile-img" alt="profile" onclick="location.href='profile_view.html'">
+      <span class="username" onclick="location.href='profile_view.html'">menegram_user</span>
+    </div>
+    <img src="https://via.placeholder.com/500x450" class="post-media" alt="post" onclick="openPostModal('https://via.placeholder.com/500x450','menegram_user','تجربة أول منشور 🎉')">
+    <div class="post-actions">
+      <button><i class="fa-regular fa-heart"></i></button>
+      <button><i class="fa-regular fa-comment"></i></button>
+      <button><i class="fa-solid fa-share"></i></button>
+    </div>
+    <p class="likes">100 إعجاب</p>
+    <p class="caption"><b>menegram_user</b> تجربة أول منشور 🎉</p>
+  </div>
+</main>
+
+<div class="bottom-nav">
+  <i class="fa-solid fa-house" onclick="location.href='home.html'"></i>
+  <i class="fa-solid fa-video" onclick="location.href='reels.html'"></i>
+  <i class="fa-solid fa-square-plus" onclick="location.href='add_post.html'"></i>
+  <i class="fa-solid fa-magnifying-glass" onclick="location.href='search.html'"></i>
+  <i class="fa-regular fa-user" onclick="location.href='profile.html'"></i>
+</div>
+
+<!-- Modal -->
+<div id="postModal">
+  <div id="postModalContent">
+    <span class="closeModal" onclick="closePostModal()">×</span>
+    <img id="modalImg" src="" style="width:100%; border-radius:10px;">
+    <p id="modalUsername" style="font-weight:bold; margin-top:10px;"></p>
+    <p id="modalCaption"></p>
+  </div>
+</div>
+
+<script>
+function openPostModal(imgSrc, username, caption) {
+  document.getElementById('modalImg').src = imgSrc;
+  document.getElementById('modalUsername').textContent = username;
+  document.getElementById('modalCaption').textContent = caption;
+  document.getElementById('postModal').style.display = 'flex';
+}
+function closePostModal() {
+  document.getElementById('postModal').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
